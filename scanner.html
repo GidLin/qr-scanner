@@ -18,31 +18,30 @@
   <div id="status" class="status"></div>
 
   <script>
-    // Replace with your approved IDs
-    const allowedIDs = ["12345", "67890"];
+    // Approved IDs and sample profile info
+    const profiles = {
+      "12345": { name: "Alice Johnson", role: "Admin" },
+      "67890": { name: "Bob Smith", role: "Employee" }
+    };
 
-    function showStatus(message, allowed) {
+    function showStatus(id) {
       const statusDiv = document.getElementById("status");
-      statusDiv.innerText = message;
-      statusDiv.className = "status " + (allowed ? "allowed" : "denied");
+      if (profiles[id]) {
+        statusDiv.innerText = `✅ Access Granted: ${profiles[id].name} (${profiles[id].role})`;
+        statusDiv.className = "status allowed";
+      } else {
+        statusDiv.innerText = "❌ Unauthorized";
+        statusDiv.className = "status denied";
+      }
     }
 
     const html5QrCode = new Html5Qrcode("reader");
     html5QrCode.start(
       { facingMode: "environment" },
       { fps: 10, qrbox: 250 },
-      qrCodeMessage => {
-        if (allowedIDs.includes(qrCodeMessage)) {
-          showStatus("✅ Access Granted", true);
-        } else {
-          showStatus("❌ Unauthorized", false);
-        }
-      },
+      qrCodeMessage => showStatus(qrCodeMessage),
       err => {}
-    ).catch(err => {
-      console.error("Camera error:", err);
-      showStatus("⚠️ Cannot access camera", false);
-    });
+    ).catch(err => console.error("Camera error:", err));
   </script>
 </body>
 </html>
